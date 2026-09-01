@@ -1,0 +1,11 @@
+#ifndef D621_CONFIG_H
+#define D621_CONFIG_H
+
+#define D621_BREITE 74
+#define D621_HOEHE  27
+
+#define D621_BAUDRATE 9600
+
+#define D621_SERIELLE_SCHNITTSTELLE "/dev/ttyUSB0"
+
+#endif

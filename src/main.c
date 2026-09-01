@@ -1,34 +1,28 @@
 #include <stdio.h>
 
-#include "../config/config.h"
-#include "hazeltine.h"
-#include "bildschirm.h"
+#include "artikel.h"
+#include "kunde.h"
 
 
 int main(void)
 {
-    printf("D621-LVS C\n");
+    artikelbestand_initialisieren();
+    kundenbestand_initialisieren();
 
-    bildschirm_initialisieren();
 
-    bildschirm_schreiben(
-        20,
-        10,
-        "D621-LVS C"
-    );
+    Kunde *kunde =
+        kunde_finden("1001");
 
-    bildschirm_schreiben(
-        25,
-        12,
-        "ESP32 VERSION"
-    );
 
-    bildschirm_cursor(
-        0,
-        0
-    );
+    if (kunde != NULL)
+    {
+        printf(
+            "%s %s\n",
+            kunde->nummer,
+            kunde->name
+        );
+    }
 
-    bildschirm_ausgeben();
 
     return 0;
 }

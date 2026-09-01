@@ -8,7 +8,8 @@ SOURCES = \
 	src/main.c \
 	src/hazeltine.c \
 	src/bildschirm.c \
-	src/artikel.c
+	src/artikel.c \
+	src/kunde.c
 
 $(PROGRAM): $(SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(PROGRAM)

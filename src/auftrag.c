@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "auftrag.h"
+#include "artikel.h"
 
 
 void auftrag_initialisieren(
@@ -66,6 +67,72 @@ int auftrag_position_hinzufuegen(
 
 
     auftrag->positionen_anzahl++;
+
+    return 0;
+}
+
+
+int auftrag_bestand_abbuchen(
+    Auftrag *auftrag
+)
+{
+    for (
+        int i = 0;
+        i < auftrag->positionen_anzahl;
+        i++
+    )
+    {
+        Auftragsposition *position =
+            &auftrag->positionen[i];
+
+
+        Artikel *artikel =
+            artikel_finden(
+                position->artikelnummer
+            );
+
+
+        if (artikel == NULL)
+        {
+            return -1;
+        }
+
+
+        if (
+            artikel->bestand
+            < position->menge
+        )
+        {
+            return -2;
+        }
+    }
+
+
+    /*
+     * Erst wenn alle Positionen
+     * geprüft wurden, buchen wir ab.
+     */
+
+    for (
+        int i = 0;
+        i < auftrag->positionen_anzahl;
+        i++
+    )
+    {
+        Auftragsposition *position =
+            &auftrag->positionen[i];
+
+
+        Artikel *artikel =
+            artikel_finden(
+                position->artikelnummer
+            );
+
+
+        artikel->bestand -=
+            position->menge;
+    }
+
 
     return 0;
 }

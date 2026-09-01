@@ -11,7 +11,8 @@ SOURCES = \
 	src/artikel.c \
 	src/kunde.c \
 	src/auftragsposition.c \
-	src/auftrag.c
+	src/auftrag.c \
+	src/auftragsverwaltung.c
 
 $(PROGRAM): $(SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(PROGRAM)

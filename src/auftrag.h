@@ -30,4 +30,9 @@ int auftrag_position_hinzufuegen(
     int menge
 );
 
+
+int auftrag_bestand_abbuchen(
+    Auftrag *auftrag
+);
+
 #endif

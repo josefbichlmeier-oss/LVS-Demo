@@ -3,93 +3,104 @@
 #include "artikel.h"
 #include "kunde.h"
 #include "auftrag.h"
+#include "auftragsverwaltung.h"
 
 
 int main(void)
 {
     artikelbestand_initialisieren();
     kundenbestand_initialisieren();
+    auftragsverwaltung_initialisieren();
 
 
-    Kunde *kunde =
-        kunde_finden("1001");
+    Auftrag *auftrag1 =
+        auftrag_neu("1001");
 
-    if (kunde == NULL)
-    {
-        printf("Kunde nicht gefunden\n");
-        return 1;
-    }
+    Auftrag *auftrag2 =
+        auftrag_neu("1002");
+
+    Auftrag *auftrag3 =
+        auftrag_neu("1001");
 
 
-    Auftrag auftrag;
+    printf(
+        "Auftrag 1: %d / Kunde %s\n",
+        auftrag1->nummer,
+        auftrag1->kundennummer
+    );
 
-    auftrag_initialisieren(
-        &auftrag,
-        1,
-        kunde->nummer
+    printf(
+        "Auftrag 2: %d / Kunde %s\n",
+        auftrag2->nummer,
+        auftrag2->kundennummer
+    );
+
+    printf(
+        "Auftrag 3: %d / Kunde %s\n",
+        auftrag3->nummer,
+        auftrag3->kundennummer
     );
 
 
+    Auftrag *gesucht =
+        auftrag_finden(2601);
+
+
+    if (gesucht != NULL)
+    {
+        printf(
+            "Gefunden: Auftrag %d\n",
+            gesucht->nummer
+        );
+    }
+
+
+    printf(
+        "Anzahl Auftraege: %d\n",
+        auftrags_anzahl()
+    );
+
+
+    printf("###########################################\n");
+
+
+    Auftrag *auftrag =
+        auftrag_neu("1001");
+
+
     auftrag_position_hinzufuegen(
-        &auftrag,
+        auftrag,
         "1001",
         20
     );
 
-    auftrag_position_hinzufuegen(
-        &auftrag,
-        "1002",
-        10
+
+    Artikel *artikel =
+        artikel_finden("1001");
+
+
+    printf(
+        "Bestand vorher: %d\n",
+        artikel->bestand
+    );
+
+
+    int ergebnis =
+        auftrag_bestand_abbuchen(
+            auftrag
+        );
+
+
+    printf(
+        "Ergebnis: %d\n",
+        ergebnis
     );
 
 
     printf(
-        "AUFTRAG %d\n",
-        auftrag.nummer
+        "Bestand nachher: %d\n",
+        artikel->bestand
     );
-
-    printf(
-        "KUNDE %s %s\n",
-        kunde->nummer,
-        kunde->name
-    );
-
-    printf(
-        "STATUS %s\n",
-        auftrag.status
-    );
-
-    printf(
-        "POSITIONEN %d\n\n",
-        auftrag.positionen_anzahl
-    );
-
-
-    for (
-        int i = 0;
-        i < auftrag.positionen_anzahl;
-        i++
-    )
-    {
-        Auftragsposition *position =
-            &auftrag.positionen[i];
-
-        Artikel *artikel =
-            artikel_finden(
-                position->artikelnummer
-            );
-
-        if (artikel != NULL)
-        {
-            printf(
-                "%s %-20s %d\n",
-                artikel->nummer,
-                artikel->bezeichnung,
-                position->menge
-            );
-        }
-    }
-
 
     return 0;
 }

@@ -101,6 +101,24 @@ int main(void)
         "Bestand nachher: %d\n",
         artikel->bestand
     );
+    
+    printf(
+        "Status: %d\n",
+        auftrag->status
+    );
+    
+    //auftrag->status = AUFTRAG_BEARBEITET;
+    if (auftrag_bestand_abbuchen(auftrag) == 0)
+    {
+        auftrag->status = AUFTRAG_ABGESCHLOSSEN;
+    }    
+
+    printf(
+        "Status: %d\n",
+        auftrag->status
+    );
+    
+    
 
     return 0;
 }

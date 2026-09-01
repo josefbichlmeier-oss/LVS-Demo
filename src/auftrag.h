@@ -5,11 +5,20 @@
 
 #define MAX_POSITIONEN 20
 
+typedef enum
+{
+    AUFTRAG_NEU,
+    AUFTRAG_BEARBEITET,
+    AUFTRAG_ABGESCHLOSSEN
+
+} Auftragsstatus;
+
 typedef struct
 {
     int nummer;
     char kundennummer[16];
-    char status[16];
+
+    Auftragsstatus status;
 
     Auftragsposition positionen[MAX_POSITIONEN];
     int positionen_anzahl;

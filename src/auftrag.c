@@ -22,17 +22,7 @@ void auftrag_initialisieren(
         sizeof(auftrag->kundennummer) - 1
     ] = '\0';
 
-
-    strncpy(
-        auftrag->status,
-        "NEU",
-        sizeof(auftrag->status) - 1
-    );
-
-    auftrag->status[
-        sizeof(auftrag->status) - 1
-    ] = '\0';
-
+    auftrag->status = AUFTRAG_NEU;
 
     auftrag->positionen_anzahl = 0;
 }

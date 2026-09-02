@@ -1,65 +1,40 @@
 #include <stdio.h>
 
-#include "artikel.h"
-#include "kunde.h"
-#include "auftrag.h"
-#include "auftragsverwaltung.h"
-#include "demo.h"
-
+#include "lagerbewegungsbestand.h"
 
 int main(void)
 {
-    demo_daten_initialisieren();
+    Lagerbewegung *bewegung;
 
+    lagerbewegungsbestand_initialisieren();
 
-    Kunde *kunde =
-        kunde_finden("1001");
-
-    if (kunde == NULL)
-    {
-        printf("KUNDE NICHT GEFUNDEN\n");
-        return 1;
-    }
-
-
-    Auftrag *auftrag =
-        auftrag_neu(kunde->nummer);
-
-    if (auftrag == NULL)
-    {
-        printf("AUFTRAG KANN NICHT ANGELEGT WERDEN\n");
-        return 1;
-    }
-
-
-    auftrag_position_hinzufuegen(
-        auftrag,
+    lagerbewegung_hinzufuegen(
         "1001",
-        20
+        10,
+        LAGER_EINGANG
     );
 
-
-    printf(
-        "AUFTRAG %d\n",
-        auftrag->nummer
+    lagerbewegung_hinzufuegen(
+        "1001",
+        3,
+        LAGER_AUSGANG
     );
 
-    printf(
-        "KUNDE %s %s\n",
-        kunde->nummer,
-        kunde->name
-    );
+    printf("Anzahl Bewegungen: %d\n",
+           lagerbewegungs_anzahl());
 
-    printf(
-        "STATUS %d\n",
-        auftrag->status
-    );
+    for (int i = 0; i < lagerbewegungs_anzahl(); i++)
+    {
+        bewegung = lagerbewegung_at(i);
 
-    printf(
-        "POSITIONEN %d\n",
-        auftrag->positionen_anzahl
-    );
-
+        printf(
+            "%d: Artikel %s, Menge %d, Typ %d\n",
+            i,
+            bewegung->artikelnummer,
+            bewegung->menge,
+            bewegung->typ
+        );
+    }
 
     return 0;
 }

@@ -13,6 +13,7 @@ typedef enum
 
 } Auftragsstatus;
 
+
 typedef struct
 {
     int nummer;

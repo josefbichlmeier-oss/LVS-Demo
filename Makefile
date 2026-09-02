@@ -13,7 +13,9 @@ SOURCES = \
 	src/auftragsposition.c \
 	src/auftrag.c \
 	src/auftragsverwaltung.c \
-	src/demo.c
+	src/lagerbewegung.c \
+	src/lagerbewegungsbestand.c \
+	src/demo.c 
 
 $(PROGRAM): $(SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(PROGRAM)

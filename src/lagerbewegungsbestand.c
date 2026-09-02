@@ -1,7 +1,7 @@
 #include <stddef.h>
 
 #include "lagerbewegungsbestand.h"
-#include "artikelbestand.h"
+#include "artikel.h"
 
 static Lagerbewegung bewegungen[MAX_LAGERBEWEGUNGEN];
 

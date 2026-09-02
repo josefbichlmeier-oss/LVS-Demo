@@ -1,6 +1,7 @@
 #include <stddef.h>
 
 #include "lagerbewegungsbestand.h"
+#include "artikelbestand.h"
 
 static Lagerbewegung bewegungen[MAX_LAGERBEWEGUNGEN];
 
@@ -47,4 +48,46 @@ Lagerbewegung *lagerbewegung_at(int index)
     }
 
     return &bewegungen[index];
+}
+
+
+int lagerbewegung_buchen(
+    const char *artikelnummer,
+    int menge,
+    Lagerbewegungstyp typ
+)
+{
+    Artikel *artikel;
+
+    artikel = artikel_finden(artikelnummer);
+
+    if (artikel == NULL)
+    {
+        return -1;
+    }
+
+    if (menge <= 0)
+    {
+        return -2;
+    }
+
+    if (typ == LAGER_AUSGANG)
+    {
+        if (artikel->bestand < menge)
+        {
+            return -3;
+        }
+
+        artikel->bestand -= menge;
+    }
+    else
+    {
+        artikel->bestand += menge;
+    }
+
+    return lagerbewegung_hinzufuegen(
+        artikelnummer,
+        menge,
+        typ
+    );
 }

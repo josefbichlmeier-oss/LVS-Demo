@@ -19,4 +19,10 @@ Lagerbewegung *lagerbewegung_at(
     int index
 );
 
+int lagerbewegung_buchen(
+    const char *artikelnummer,
+    int menge,
+    Lagerbewegungstyp typ
+);
+
 #endif

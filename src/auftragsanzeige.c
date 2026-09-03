@@ -4,9 +4,6 @@
 #include "artikel.h"
 #include "kunde.h"
 
-#define BILDSCHIRMBREITE 74
-#define MAX_ZEILE 26
-
 void auftragsanzeige_ausgeben(
     const Auftrag *auftrag
 )
@@ -20,48 +17,54 @@ void auftragsanzeige_ausgeben(
         return;
     }
 
+    /*
+     * Kopf
+     */
+
     printf("\n");
     printf("                         AUFTRAGSANZEIGE\n");
-    printf("--------------------------------------------------------------------------\n");
+    printf("\n");
 
     printf(
-        "AUFTRAG: %04d                                      STATUS: %-12s\n",
-        auftrag->nummer,
+        "AUFTRAG: %04d",
+        auftrag->nummer
+    );
+
+    printf(
+        "                              STATUS: %-12s\n",
         auftrag_status_text(auftrag->status)
     );
 
+    /*
+     * Kunde
+     */
+
     kunde = kunde_finden(auftrag->kundennummer);
+
+    printf(
+        "KUNDE:   %-16s",
+        auftrag->kundennummer
+    );
 
     if (kunde != NULL)
     {
-        printf(
-            "KUNDE:   %-16s \n         %-47s\n",
-            kunde->nummer,
-            kunde->name
-        );
-    }
-    else
-    {
-        printf(
-            "KUNDE:   %-16s %-47s\n",
-            auftrag->kundennummer,
-            "UNBEKANNT"
-        );
+        printf("%s", kunde->name);
     }
 
-    printf(
-        "\nPOSITIONEN: %-2d\n",
-        auftrag->positionen_anzahl
-    );
+    printf("\n\n");
 
-    printf("\n");
+    /*
+     * Positionen
+     */
+
+    printf("POSITIONEN: %d\n\n", auftrag->positionen_anzahl);
 
     printf(
         "POS  ARTIKEL        BEZEICHNUNG                              MENGE\n"
     );
 
     printf(
-        "------------------------------------------------------------------------\n"
+        "------------------------------------------------------------------\n"
     );
 
     for (i = 0; i < auftrag->positionen_anzahl; i++)
@@ -94,21 +97,9 @@ void auftragsanzeige_ausgeben(
     }
 
     /*
-     * Restliche Zeilen bis zur festen Bildschirmhöhe.
+     * Bedienhinweis
      */
 
-    for (i = auftrag->positionen_anzahl; i < 10; i++)
-    {
-        printf("\n");
-    }
-
-    printf("\n");
-
-    printf(
-        "[ESC] ZURUECK\n"
-    );
-
-    printf(
-        "\n"
-    );
+    printf("\n\n");
+    printf("ESC ZURUECK\n");
 }

@@ -76,10 +76,21 @@ int auftrag_bestand_abbuchen(
     }
 
     /*
+     * Auftrag darf nur einmal abgewickelt werden.
+     */
+    if (auftrag->status == AUFTRAG_ABGESCHLOSSEN)
+    {
+        return -5;
+    }
+
+    /*
+     * Auftrag wird jetzt bearbeitet.
+     */
+    auftrag->status = AUFTRAG_BEARBEITET;
+
+    /*
      * Zuerst prüfen, ob alle Positionen
      * ausreichend Bestand haben.
-     *
-     * Noch keine Buchung durchführen!
      */
     for (i = 0; i < auftrag->positionen_anzahl; i++)
     {
@@ -116,5 +127,40 @@ int auftrag_bestand_abbuchen(
         }
     }
 
+    /*
+     * Auftrag erfolgreich abgeschlossen.
+     */
+    auftrag->status = AUFTRAG_ABGESCHLOSSEN;
+
     return 0;
 }
+
+
+const char *auftrag_status_text(
+    Auftragsstatus status
+)
+{
+    switch (status)
+    {
+        case AUFTRAG_NEU:
+            return "NEU";
+
+        case AUFTRAG_BEARBEITET:
+            return "BEARBEITET";
+
+        case AUFTRAG_ABGESCHLOSSEN:
+            return "ABGESCHLOSSEN";
+
+        default:
+            return "UNBEKANNT";
+    }
+}
+
+/* Beispiel
+printf(
+    "%04d  %-12s  %s\n",
+    auftrag->nummer,
+    auftrag->kundennummer,
+    auftrag_status_text(auftrag->status)
+);
+*/

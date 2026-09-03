@@ -45,4 +45,8 @@ int auftrag_bestand_abbuchen(
     Auftrag *auftrag
 );
 
+
+const char *auftrag_status_text(
+    Auftragsstatus status
+);
 #endif

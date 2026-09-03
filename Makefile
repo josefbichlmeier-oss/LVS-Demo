@@ -15,6 +15,7 @@ SOURCES = \
 	src/auftragsverwaltung.c \
 	src/lagerbewegung.c \
 	src/lagerbewegungsbestand.c \
+	src/auftragsanzeige.c \
 	src/demo.c 
 
 $(PROGRAM): $(SOURCES)

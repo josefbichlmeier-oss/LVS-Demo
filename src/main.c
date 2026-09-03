@@ -1,65 +1,78 @@
 #include <stdio.h>
 
 #include "artikel.h"
+#include "auftrag.h"
+#include "auftragsverwaltung.h"
 #include "lagerbewegungsbestand.h"
 
 int main(void)
 {
-    Artikel *artikel;
+    Artikel *artikel1;
+    Artikel *artikel2;
+    Auftrag *auftrag;
+    Lagerbewegung *bewegung;
 
     artikelbestand_initialisieren();
+    auftragsverwaltung_initialisieren();
     lagerbewegungsbestand_initialisieren();
 
-    artikel = artikel_finden("1001");
+    artikel1 = artikel_finden("1001");
+    artikel2 = artikel_finden("1002");
 
-    printf("Anfangsbestand: %d\n", artikel->bestand);
+    printf("Anfangsbestand 1001: %d\n", artikel1->bestand);
+    printf("Anfangsbestand 1002: %d\n", artikel2->bestand);
 
-    printf(
-        "Eingang buchen: %d\n",
-        lagerbewegung_buchen(
-            "1001",
-            10,
-            LAGER_EINGANG
-        )
+    auftrag = auftrag_neu("1001");
+
+    auftrag_position_hinzufuegen(
+        auftrag,
+        "1001",
+        3
     );
 
-    printf("Bestand nach Eingang: %d\n", artikel->bestand);
-
-    printf(
-        "Ausgang buchen: %d\n",
-        lagerbewegung_buchen(
-            "1001",
-            3,
-            LAGER_AUSGANG
-        )
-    );
-
-    printf("Bestand nach Ausgang: %d\n", artikel->bestand);
-
-    printf(
-        "Unbekannter Artikel: %d\n",
-        lagerbewegung_buchen(
-            "9999",
-            5,
-            LAGER_AUSGANG
-        )
+    auftrag_position_hinzufuegen(
+        auftrag,
+        "1002",
+        5
     );
 
     printf(
-        "Zu grosser Ausgang: %d\n",
-        lagerbewegung_buchen(
-            "1001",
-            999999,
-            LAGER_AUSGANG
-        )
+        "Auftrag: %d\n",
+        auftrag->nummer
     );
 
     printf(
-        "Anzahl Lagerbewegungen: %d\n",
+        "Positionen: %d\n",
+        auftrag->positionen_anzahl
+    );
+
+    printf(
+        "Abbuchen: %d\n",
+        auftrag_bestand_abbuchen(auftrag)
+    );
+
+    printf("Bestand 1001: %d\n", artikel1->bestand);
+    printf("Bestand 1002: %d\n", artikel2->bestand);
+
+    printf(
+        "Lagerbewegungen: %d\n",
         lagerbewegungs_anzahl()
     );
 
-    printf("Bestand nach Fehlbuchung: %d\n", artikel->bestand);
+    for (int i = 0;
+         i < lagerbewegungs_anzahl();
+         i++)
+    {
+        bewegung = lagerbewegung_at(i);
+
+        printf(
+            "%d: Artikel %s, Menge %d, Typ %d\n",
+            i,
+            bewegung->artikelnummer,
+            bewegung->menge,
+            bewegung->typ
+        );
+    }
 
     return 0;
 }

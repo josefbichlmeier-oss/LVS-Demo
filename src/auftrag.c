@@ -2,6 +2,7 @@
 
 #include "auftrag.h"
 #include "artikel.h"
+#include "lagerbewegungsbestand.h"
 
 
 void auftrag_initialisieren(
@@ -66,63 +67,54 @@ int auftrag_bestand_abbuchen(
     Auftrag *auftrag
 )
 {
-    for (
-        int i = 0;
-        i < auftrag->positionen_anzahl;
-        i++
-    )
-    {
-        Auftragsposition *position =
-            &auftrag->positionen[i];
+    int i;
+    Auftragsposition *position;
 
+    if (auftrag == NULL)
+    {
+        return -4;
+    }
+
+    /*
+     * Zuerst prüfen, ob alle Positionen
+     * ausreichend Bestand haben.
+     *
+     * Noch keine Buchung durchführen!
+     */
+    for (i = 0; i < auftrag->positionen_anzahl; i++)
+    {
+        position = &auftrag->positionen[i];
 
         Artikel *artikel =
-            artikel_finden(
-                position->artikelnummer
-            );
-
+            artikel_finden(position->artikelnummer);
 
         if (artikel == NULL)
         {
             return -1;
         }
 
-
-        if (
-            artikel->bestand
-            < position->menge
-        )
+        if (artikel->bestand < position->menge)
         {
             return -2;
         }
     }
 
-
     /*
-     * Erst wenn alle Positionen
-     * geprüft wurden, buchen wir ab.
+     * Jetzt alle Positionen als
+     * Lagerausgang buchen.
      */
-
-    for (
-        int i = 0;
-        i < auftrag->positionen_anzahl;
-        i++
-    )
+    for (i = 0; i < auftrag->positionen_anzahl; i++)
     {
-        Auftragsposition *position =
-            &auftrag->positionen[i];
+        position = &auftrag->positionen[i];
 
-
-        Artikel *artikel =
-            artikel_finden(
-                position->artikelnummer
-            );
-
-
-        artikel->bestand -=
-            position->menge;
+        if (lagerbewegung_buchen(
+                position->artikelnummer,
+                position->menge,
+                LAGER_AUSGANG) != 0)
+        {
+            return -3;
+        }
     }
-
 
     return 0;
 }

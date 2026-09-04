@@ -1,89 +1,63 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../config/config.h"
 #include "bildschirm.h"
+#include "terminal.h"
 
-
-static char daten[D621_HOEHE][D621_BREITE];
-
-static int cursor_x;
-static int cursor_y;
-
-
-void bildschirm_initialisieren(void)
-{
-    bildschirm_loeschen();
-
-    cursor_x = 0;
-    cursor_y = 0;
-}
-
+static char bildschirm[BILDSCHIRMHOEHE][BILDSCHIRMBREITE];
 
 void bildschirm_loeschen(void)
 {
-    for (int y = 0; y < D621_HOEHE; y++)
+    int y;
+
+    for (y = 0; y < BILDSCHIRMHOEHE; y++)
     {
-        for (int x = 0; x < D621_BREITE; x++)
-        {
-            daten[y][x] = ' ';
-        }
+        memset(
+            bildschirm[y],
+            ' ',
+            BILDSCHIRMBREITE
+        );
     }
+
+    terminal_loeschen();
 }
 
-
-void bildschirm_schreiben(
+void bildschirm_text(
     int x,
     int y,
     const char *text
 )
 {
-    if (y < 0 || y >= D621_HOEHE)
+    int i;
+
+    if (x < 0 || x >= BILDSCHIRMBREITE)
         return;
 
-    for (int i = 0; text[i] != '\0'; i++)
+    if (y < 0 || y >= BILDSCHIRMHOEHE)
+        return;
+
+    for (i = 0;
+         text[i] != '\0' &&
+         x + i < BILDSCHIRMBREITE;
+         i++)
     {
-        int xpos = x + i;
-
-        if (xpos < 0)
-            continue;
-
-        if (xpos >= D621_BREITE)
-            break;
-
-        daten[y][xpos] = text[i];
+        bildschirm[y][x + i] = text[i];
     }
 }
 
-
-void bildschirm_cursor(
-    int x,
-    int y
-)
-{
-    if (x >= 0 && x < D621_BREITE)
-        cursor_x = x;
-
-    if (y >= 0 && y < D621_HOEHE)
-        cursor_y = y;
-}
-
-
 void bildschirm_ausgeben(void)
 {
-    printf("\033[2J");
-    printf("\033[H");
+    int x;
+    int y;
 
-    for (int y = 0; y < D621_HOEHE; y++)
+    for (y = 0; y < BILDSCHIRMHOEHE; y++)
     {
-        fwrite(
-            daten[y],
-            1,
-            D621_BREITE,
-            stdout
-        );
+        terminal_positionieren(0, y);
 
-        putchar('\n');
+        for (x = 0; x < BILDSCHIRMBREITE; x++)
+        {
+            putchar(bildschirm[y][x]);
+        }
     }
 
     fflush(stdout);

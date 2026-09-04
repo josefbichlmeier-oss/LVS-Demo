@@ -7,6 +7,7 @@ PROGRAM = d621-lvs
 SOURCES = \
 	src/main.c \
 	src/hazeltine.c \
+	src/terminal.c \
 	src/bildschirm.c \
 	src/artikel.c \
 	src/kunde.c \

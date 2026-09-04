@@ -1,18 +1,15 @@
 #ifndef D621_BILDSCHIRM_H
 #define D621_BILDSCHIRM_H
 
-void bildschirm_initialisieren(void);
+#define BILDSCHIRMBREITE 74
+#define BILDSCHIRMHOEHE 27
+
 void bildschirm_loeschen(void);
 
-void bildschirm_schreiben(
+void bildschirm_text(
     int x,
     int y,
     const char *text
-);
-
-void bildschirm_cursor(
-    int x,
-    int y
 );
 
 void bildschirm_ausgeben(void);

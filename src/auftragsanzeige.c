@@ -1,105 +1,100 @@
 #include <stdio.h>
 
 #include "auftragsanzeige.h"
+#include "bildschirm.h"
 #include "artikel.h"
-#include "kunde.h"
 
 void auftragsanzeige_ausgeben(
     const Auftrag *auftrag
 )
 {
     int i;
-    Artikel *artikel;
-    Kunde *kunde;
+    char text[80];
 
     if (auftrag == NULL)
-    {
         return;
-    }
 
-    /*
-     * Kopf
-     */
+    bildschirm_loeschen();
 
-    printf("\n");
-    printf("                         AUFTRAGSANZEIGE\n");
-    printf("\n");
+    bildschirm_text(30, 2, "D621-LVS");
+    bildschirm_text(27, 3, "AUFTRAGSANZEIGE");
 
-    printf(
-        "AUFTRAG: %04d",
+    bildschirm_text(0, 5, "AUFTRAG:");
+
+    snprintf(
+        text,
+        sizeof(text),
+        "%d",
         auftrag->nummer
     );
+    bildschirm_text(10, 5, text);
 
-    printf(
-        "                              STATUS: %-12s\n",
+    bildschirm_text(45, 5, "STATUS:");
+    bildschirm_text(
+        53,
+        5,
         auftrag_status_text(auftrag->status)
     );
 
-    /*
-     * Kunde
-     */
+    bildschirm_text(0, 7, "KUNDE:");
+    bildschirm_text(10, 7, auftrag->kundennummer);
 
-    kunde = kunde_finden(auftrag->kundennummer);
+    bildschirm_text(0, 9, "POSITIONEN:");
 
-    printf(
-        "KUNDE:   %-16s",
-        auftrag->kundennummer
+    snprintf(
+        text,
+        sizeof(text),
+        "%d",
+        auftrag->positionen_anzahl
     );
+    bildschirm_text(12, 9, text);
 
-    if (kunde != NULL)
-    {
-        printf("%s", kunde->name);
-    }
-
-    printf("\n\n");
-
-    /*
-     * Positionen
-     */
-
-    printf("POSITIONEN: %d\n\n", auftrag->positionen_anzahl);
-
-    printf(
-        "POS  ARTIKEL        BEZEICHNUNG                              MENGE\n"
-    );
-
-    printf(
-        "------------------------------------------------------------------\n"
-    );
+    bildschirm_text(0, 11, "POS");
+    bildschirm_text(6, 11, "ARTIKEL");
+    bildschirm_text(22, 11, "BEZEICHNUNG");
+    bildschirm_text(65, 11, "MENGE");
 
     for (i = 0; i < auftrag->positionen_anzahl; i++)
     {
-        artikel =
-            artikel_finden(
-                auftrag->positionen[i].artikelnummer
-            );
+        Auftragsposition *position =
+            &auftrag->positionen[i];
+
+        Artikel *artikel =
+            artikel_finden(position->artikelnummer);
+
+        snprintf(
+            text,
+            sizeof(text),
+            "%02d",
+            i + 1
+        );
+        bildschirm_text(0, 13 + i, text);
+
+        bildschirm_text(
+            6,
+            13 + i,
+            position->artikelnummer
+        );
 
         if (artikel != NULL)
         {
-            printf(
-                "%02d   %-14s %-40s %5d\n",
-                i + 1,
-                artikel->nummer,
-                artikel->bezeichnung,
-                auftrag->positionen[i].menge
+            bildschirm_text(
+                22,
+                13 + i,
+                artikel->bezeichnung
             );
         }
-        else
-        {
-            printf(
-                "%02d   %-14s %-40s %5d\n",
-                i + 1,
-                auftrag->positionen[i].artikelnummer,
-                "UNBEKANNT",
-                auftrag->positionen[i].menge
-            );
-        }
+
+        snprintf(
+            text,
+            sizeof(text),
+            "%d",
+            position->menge
+        );
+        bildschirm_text(67, 13 + i, text);
     }
 
-    /*
-     * Bedienhinweis
-     */
+    bildschirm_text(0, 25, "ESC ZURUECK");
 
-    printf("\n\n");
-    printf("ESC ZURUECK\n");
+    bildschirm_ausgeben();
 }

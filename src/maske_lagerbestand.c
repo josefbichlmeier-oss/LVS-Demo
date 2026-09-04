@@ -1,13 +1,14 @@
-#include <ctype.h>
 #include <stdio.h>
 
 #include "maske_lagerbestand.h"
 #include "bildschirm.h"
 #include "eingabe.h"
 #include "artikel.h"
+#include "maske_artikelanzeige.h"
+#include "maske_fehlermeldung.h"
 
 
-Ergebnis maske_lagerbestand_anzeigen(void)
+static void liste_zeichnen(void)
 {
     char zeile[140];
     int y = 5;
@@ -34,16 +35,39 @@ Ergebnis maske_lagerbestand_anzeigen(void)
         y++;
     }
 
-    bildschirm_aktion("X  ZURUECK  ");
+    bildschirm_schreiben(2, 22, "ARTIKELNUMMER:");
+    bildschirm_aktion("ESC = ZURUECK");
     bildschirm_ausgeben();
+}
 
+
+Ergebnis maske_lagerbestand_anzeigen(void)
+{
     for (;;)
     {
-        char taste = (char)toupper((unsigned char)eingabe_taste());
+        char nummer[16];
 
-        if (taste == 'X')
+        liste_zeichnen();
+
+        if (eingabe_zeile(nummer, sizeof(nummer), 15, 17, 22) == -1)
         {
             return ERG_ZURUECK;
+        }
+
+        if (nummer[0] == '\0')
+        {
+            continue;
+        }
+
+        Artikel *artikel = artikel_finden(nummer);
+
+        if (artikel)
+        {
+            maske_artikelanzeige_anzeigen(artikel);
+        }
+        else
+        {
+            maske_fehlermeldung_anzeigen("ARTIKEL NICHT GEFUNDEN");
         }
     }
 }

@@ -35,10 +35,7 @@ int auftrag_position_hinzufuegen(
     int menge
 )
 {
-    if (
-        auftrag->positionen_anzahl
-        >= MAX_POSITIONEN
-    )
+    if (auftrag->positionen_anzahl >= MAX_POSITIONEN)
     {
         return -1;
     }
@@ -76,7 +73,7 @@ int auftrag_bestand_abbuchen(
     }
 
     /*
-     * Auftrag darf nur einmal abgewickelt werden.
+     * Auftrag darf nur einmal ausgeliefert werden.
      */
     if (auftrag->status == AUFTRAG_ABGESCHLOSSEN)
     {
@@ -84,13 +81,11 @@ int auftrag_bestand_abbuchen(
     }
 
     /*
-     * Auftrag wird jetzt bearbeitet.
-     */
-    auftrag->status = AUFTRAG_BEARBEITET;
-
-    /*
-     * Zuerst prüfen, ob alle Positionen
-     * ausreichend Bestand haben.
+     * Zuerst NUR pruefen, ob alle Positionen ausreichend Bestand
+     * haben. Der Status wird hier bewusst noch NICHT veraendert -
+     * schlaegt die Pruefung fehl, bleibt der Auftrag unangetastet
+     * im vorherigen Zustand (kein haengenbleiben in einem
+     * "halb bearbeiteten" Status).
      */
     for (i = 0; i < auftrag->positionen_anzahl; i++)
     {
@@ -111,8 +106,12 @@ int auftrag_bestand_abbuchen(
     }
 
     /*
-     * Jetzt alle Positionen als
-     * Lagerausgang buchen.
+     * Pruefung erfolgreich - Auftrag wird jetzt bearbeitet.
+     */
+    auftrag->status = AUFTRAG_BEARBEITET;
+
+    /*
+     * Jetzt alle Positionen als Lagerausgang buchen.
      */
     for (i = 0; i < auftrag->positionen_anzahl; i++)
     {
@@ -142,25 +141,9 @@ const char *auftrag_status_text(
 {
     switch (status)
     {
-        case AUFTRAG_NEU:
-            return "NEU";
-
-        case AUFTRAG_BEARBEITET:
-            return "BEARBEITET";
-
-        case AUFTRAG_ABGESCHLOSSEN:
-            return "ABGESCHLOSSEN";
-
-        default:
-            return "UNBEKANNT";
+        case AUFTRAG_NEU:          return "OFFEN";
+        case AUFTRAG_BEARBEITET:   return "IN BEARBEITUNG";
+        case AUFTRAG_ABGESCHLOSSEN:return "AUSGELIEFERT";
+        default:                   return "?";
     }
 }
-
-/* Beispiel
-printf(
-    "%04d  %-12s  %s\n",
-    auftrag->nummer,
-    auftrag->kundennummer,
-    auftrag_status_text(auftrag->status)
-);
-*/

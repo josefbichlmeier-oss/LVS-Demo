@@ -24,10 +24,7 @@ Auftrag *auftrag_neu(
     const char *kundennummer
 )
 {
-    if (
-        auftrags_anzahl_wert
-        >= MAX_AUFTRAEGE
-    )
+    if (auftrags_anzahl_wert >= MAX_AUFTRAEGE)
     {
         return NULL;
     }
@@ -56,16 +53,9 @@ Auftrag *auftrag_finden(
     int nummer
 )
 {
-    for (
-        int i = 0;
-        i < auftrags_anzahl_wert;
-        i++
-    )
+    for (int i = 0; i < auftrags_anzahl_wert; i++)
     {
-        if (
-            auftraege[i].nummer
-            == nummer
-        )
+        if (auftraege[i].nummer == nummer)
         {
             return &auftraege[i];
         }
@@ -86,10 +76,7 @@ Auftrag *auftrag_at(
     int index
 )
 {
-    if (
-        index < 0 ||
-        index >= auftrags_anzahl_wert
-    )
+    if (index < 0 || index >= auftrags_anzahl_wert)
     {
         return NULL;
     }

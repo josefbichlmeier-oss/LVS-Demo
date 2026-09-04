@@ -1,31 +1,23 @@
-#include "artikel.h"
-#include "kunde.h"
-#include "auftragsverwaltung.h"
-#include "auftragsanzeige.h"
+/*
+ * D621-LVS
+ *
+ * Linux-Debug-Einstiegspunkt. Wird ausschliesslich fuer den
+ * Debug-Build (gcc, virtuelle Konsole) verwendet - fuer den
+ * ESP32-Zielbetrieb siehe arduino/d621_lvs/d621_lvs.ino.
+ */
+
+#include "platform.h"
+
+#if defined(PLATFORM_LINUX)
+
+#include "anwendung.h"
+
 
 int main(void)
 {
-    Auftrag *auftrag;
-
-    artikelbestand_initialisieren();
-    kundenbestand_initialisieren();
-    auftragsverwaltung_initialisieren();
-
-    auftrag = auftrag_neu("1001");
-
-    auftrag_position_hinzufuegen(
-        auftrag,
-        "1001",
-        5
-    );
-
-    auftrag_position_hinzufuegen(
-        auftrag,
-        "1002",
-        3
-    );
-
-    auftragsanzeige_ausgeben(auftrag);
+    anwendung_start();
 
     return 0;
 }
+
+#endif

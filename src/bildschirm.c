@@ -27,9 +27,6 @@ static int aenderungen_anzahl = 0;
  * komplette Bildschirm neu gesendet statt nur der Aenderungsliste. */
 static int ueberlauf = 0;
 
-static int cursor_x = -1;
-static int cursor_y = -1;
-
 
 static void puffer_leeren(void)
 {
@@ -91,9 +88,6 @@ void bildschirm_init(void)
 
     aenderungen_anzahl = 0;
     ueberlauf = 0;
-
-    cursor_x = -1;
-    cursor_y = -1;
 }
 
 
@@ -206,8 +200,11 @@ void bildschirm_aktion(const char *text)
 
 void bildschirm_cursor(int x, int y)
 {
-    cursor_x = x;
-    cursor_y = y;
+    /* Direkter, sofortiger Terminalbefehl - entspricht exakt Ruby
+     * Bildschirm#cursor, das @terminal.position(x,y) unmittelbar
+     * aufruft (kein Zusammenhang mit dem Dirty-Tracking/@geaendert
+     * und nicht erst bei ausgeben() wirksam). */
+    terminal_position(x, y);
 }
 
 
@@ -266,8 +263,14 @@ void bildschirm_ausgeben(void)
     aenderungen_anzahl = 0;
     ueberlauf = 0;
 
-    if (cursor_x >= 0 && cursor_y >= 0)
-    {
-        terminal_position(cursor_x, cursor_y);
-    }
+    /*
+     * Bewusst KEIN erneutes Positionieren des Cursors hier - das
+     * Original tut das an dieser Stelle ebenfalls nicht (die dafuer
+     * vorgesehenen Instanzvariablen werden dort nirgends gesetzt).
+     * Nach dem Schreiben eines einzelnen Zeichens steht der
+     * Terminal-Cursor bereits durch den natuerlichen Vorschub des
+     * Terminals (Hazeltine wie ANSI-VT) automatisch richtig - siehe
+     * bildschirm_cursor() fuer die Faelle, in denen explizit
+     * repositioniert werden muss (z.B. nach Backspace).
+     */
 }

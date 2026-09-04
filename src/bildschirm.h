@@ -42,8 +42,15 @@ void bildschirm_status(const char *text, const char *zustand);
  * linksbuendig auf 20 Zeichen aufgefuellt */
 void bildschirm_aktion(const char *text);
 
-/* Cursorposition merken - wird nach dem Senden aller Aenderungen
- * in bildschirm_ausgeben() angefahren */
+/* Positioniert den Terminal-Cursor SOFORT (direkter Durchgriff,
+ * unabhaengig vom Dirty-Tracking/bildschirm_ausgeben() - entspricht
+ * exakt Ruby Bildschirm#cursor). Wird u.a. von eingabe_zeile() und
+ * eingabefeld_lesen() genutzt, um den Cursor nach einem Backspace
+ * (oder beim vollstaendigen Neuzeichnen eines Eingabefelds) an die
+ * richtige Stelle zu korrigieren - beim normalen Vorwaertstippen
+ * eines einzelnen Zeichens ist kein expliziter Aufruf noetig, da
+ * das Terminal den Cursor nach dem Schreiben eines Zeichens von
+ * selbst weiterschiebt. */
 void bildschirm_cursor(int x, int y);
 
 void bildschirm_cursor_zurueck(void);
@@ -51,8 +58,8 @@ void bildschirm_cursor_zurueck(void);
 void bildschirm_hell(void);
 void bildschirm_dunkel(void);
 
-/* Sendet alle gesammelten Aenderungen ans Terminal und faehrt
- * anschliessend die zuletzt gesetzte Cursorposition an. */
+/* Sendet alle gesammelten Aenderungen ans Terminal. Ruehrt den
+ * Cursor NICHT an - siehe bildschirm_cursor(). */
 void bildschirm_ausgeben(void);
 
 #endif

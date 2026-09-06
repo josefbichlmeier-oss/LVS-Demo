@@ -4,14 +4,15 @@
 #include "bildschirm.h"
 #include "eingabe.h"
 #include "artikel.h"
+#include "paginierung.h"
+
+#define ZEILEN_PRO_SEITE 13
 
 
-Ergebnis maske_artikelsuche_anzeigen(
-    char *nummer_out,
-    size_t nummer_out_groesse
-)
+static void liste_zeichnen(const Paginierung *seiten)
 {
     char zeile[140];
+    char hinweis[40];
     int y = 5;
 
     bildschirm_loeschen();
@@ -19,7 +20,7 @@ Ergebnis maske_artikelsuche_anzeigen(
     bildschirm_schreiben(3, 3, "NUMMER   BEZEICHNUNG                     MENGE");
     bildschirm_schreiben(2, 4, "------------------------------------------------------------");
 
-    for (int i = 0; i < artikel_anzahl(); i++)
+    for (int i = paginierung_start_index(seiten); i < paginierung_ende_index(seiten); i++)
     {
         Artikel *artikel = artikel_at(i);
 
@@ -35,14 +36,51 @@ Ergebnis maske_artikelsuche_anzeigen(
         y++;
     }
 
+    paginierung_hinweis(hinweis, sizeof(hinweis), seiten);
+    bildschirm_schreiben(5, 18, hinweis);
+
     bildschirm_schreiben(5, 20, "ARTIKELNUMMER:");
     bildschirm_aktion("ESC = ZURUECK");
     bildschirm_ausgeben();
+}
 
-    if (eingabe_zeile(nummer_out, nummer_out_groesse, 20, 20, 20) == -1)
+
+Ergebnis maske_artikelsuche_anzeigen(
+    char *nummer_out,
+    size_t nummer_out_groesse
+)
+{
+    Paginierung seiten = { 0, ZEILEN_PRO_SEITE, artikel_anzahl() };
+
+    for (;;)
     {
-        return ERG_ZURUECK;
-    }
+        liste_zeichnen(&seiten);
 
-    return ERG_OK;
+        char erste_taste = eingabe_taste();
+
+        if (erste_taste == '+')
+        {
+            paginierung_naechste(&seiten);
+            continue;
+        }
+
+        if (erste_taste == '-')
+        {
+            paginierung_vorherige(&seiten);
+            continue;
+        }
+
+        if (erste_taste == '\033')
+        {
+            return ERG_ZURUECK;
+        }
+
+        if (eingabe_zeile_mit_erstem_zeichen(
+                erste_taste, nummer_out, nummer_out_groesse, 20, 20, 20) == -1)
+        {
+            return ERG_ZURUECK;
+        }
+
+        return ERG_OK;
+    }
 }

@@ -37,6 +37,22 @@ int eingabe_zeile(
 );
 
 /*
+ * Wie eingabe_zeile(), aber das erste Zeichen wurde bereits vorher
+ * ausserhalb gelesen (z.B. um es auf eine Sonderbedeutung wie
+ * Seitennavigation zu pruefen, bevor entschieden ist, dass es sich
+ * um den Beginn einer normalen Eingabe handelt) und wird hier so
+ * behandelt, als waere es soeben getippt worden (inkl. Echo).
+ */
+int eingabe_zeile_mit_erstem_zeichen(
+    char erstes_zeichen,
+    char *puffer,
+    size_t puffer_groesse,
+    int max_laenge,
+    int x,
+    int y
+);
+
+/*
  * Wie eingabe_zeile, aber ohne jegliche Bildschirmausgabe
  * (Kennworteingabe).
  */

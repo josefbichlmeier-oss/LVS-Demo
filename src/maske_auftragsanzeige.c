@@ -86,7 +86,31 @@ Ergebnis maske_auftragsanzeige_anzeigen(const Auftrag *auftrag)
 
         if (taste == 'A')
         {
-            return ERG_AUSLIEFERN;
+            bildschirm_aktion("WIRKLICH AUSLIEFERN? J/N");
+            bildschirm_ausgeben();
+
+            char bestaetigung;
+
+            do
+            {
+                bestaetigung = (char)toupper((unsigned char)eingabe_taste());
+            }
+            while (bestaetigung != 'J' &&
+                   bestaetigung != 'N' &&
+                   bestaetigung != '\033');
+
+            if (bestaetigung == 'J')
+            {
+                return ERG_AUSLIEFERN;
+            }
+
+            /* N oder ESC - Abfrage zuruecknehmen, urspruengliche
+             * Fusszeile wiederherstellen und weiter auf eine Taste
+             * warten (Bildschirm bleibt sonst unveraendert). */
+            bildschirm_aktion("X  ZURUECK");
+            bildschirm_ausgeben();
+
+            continue;
         }
 
         if (taste == 'X')

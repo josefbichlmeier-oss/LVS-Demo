@@ -52,6 +52,32 @@ Pins/UART-Nummer in `config/config.h`
 (`D621_ESP32_RXD_PIN`/`D621_ESP32_TXD_PIN`/`D621_ESP32_UART_NUM`)
 konfigurierbar. UART0 (USB) bleibt frei fuer Flashen/Log.
 
+## Erweiterungen gegenueber der ersten Portierung
+
+- **Artikeldetails aus dem Lagerbestand**: Unter LAGER -> BESTAND
+  ANZEIGEN kann jetzt direkt eine Artikelnummer eingegeben werden,
+  um die Detailanzeige zu oeffnen (analog zur Artikelsuche). Leere
+  Eingabe zeichnet die Liste einfach neu, ESC geht zurueck ins
+  Lager-Menue.
+- **Bestaetigung vor Auslieferung**: In der Auftragsanzeige loest
+  die Taste "A" (AUSLIEFERN) zunaechst die Rueckfrage "WIRKLICH
+  AUSLIEFERN? J/N" aus. Nur "J" fuehrt tatsaechlich zur Buchung
+  (`auftrag_bestand_abbuchen`); "N" oder ESC kehren ohne jede
+  Nebenwirkung zur Auftragsanzeige zurueck.
+- **Paginierung** (`src/paginierung.c/h`): Alle listenbasierten
+  Masken (Lagerbestand, Artikelstamm, Artikelsuche,
+  Kundenuebersicht, Auftragsuebersicht, Lagerbewegungen) blaettern
+  jetzt seitenweise, sobald mehr Eintraege vorhanden sind, als auf
+  einen Bildschirm passen - Taste "+" fuer die naechste, "-" fuer
+  die vorherige Seite, Anzeige "SEITE x/y" auf dem Bildschirm. Bei
+  Masken mit anschliessender Nummerneingabe (Lagerbestand,
+  Artikelsuche, Kundenuebersicht, Auftragsuebersicht) wird dazu das
+  jeweils erste gedrueckte Zeichen zunaechst auf "+"/"-"/ESC
+  geprueft (`eingabe_zeile_mit_erstem_zeichen()` in `src/eingabe.c`)
+  und nur bei einer normalen Ziffer als Beginn der Nummerneingabe
+  gewertet - dadurch bleibt das Verhalten aller anderen
+  Eingabefelder (z.B. Mengenfelder) unveraendert.
+
 ## Projektstruktur
 
 ```
@@ -63,6 +89,7 @@ src/tastatur*.c/h        Tastatureingabe (Linux Raw-Mode / Hazeltine-Rueckkanal)
 src/zeit_port*.h/.c/.cpp Kopfzeilen-Uhrzeit (Systemzeit / Laufzeit seit Boot)
 src/bildschirm.c/h       Bildschirmpuffer mit Dirty-Tracking
 src/eingabe*.c/h         Zeilenweise Eingabe, Eingabefeld (Anmeldemaske)
+src/paginierung.c/h      Seitenweises Blaettern durch Listen (+/- Tasten)
 src/artikel*, kunde*,    Datenmodelle (statische Arrays, kein Dateisystem)
 src/auftrag*, lagerbewegung*
 src/maske_*.c/h          Alle Bildschirmmasken (1:1 zu masken/*.rb)

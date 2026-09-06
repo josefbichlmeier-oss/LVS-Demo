@@ -17,6 +17,7 @@ SOURCES = \
 	src/bildschirm.c \
 	src/eingabe.c \
 	src/eingabefeld.c \
+	src/paginierung.c \
 	src/terminal_linux.c \
 	src/tastatur_linux.c \
 	src/zeit_port_linux.c \

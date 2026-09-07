@@ -34,6 +34,24 @@ int uart_port_read_byte(unsigned char *out);
 
 void uart_port_delay_ms(unsigned int ms);
 
+/*
+ * Nur fuer das optionale Nokia-5110-Diagnose-Display gedacht
+ * (siehe config.h D621_NOKIA5110_AKTIV) - liefert einfache
+ * Betriebszaehler seit dem letzten Start:
+ *
+ *   *tx_bytes     Anzahl ueber uart_port_write() gesendeter Bytes
+ *   *rx_bytes     Anzahl ueber uart_port_read_byte() empfangener Bytes
+ *   *letztes_byte zuletzt empfangenes Byte (0, falls noch keins da war)
+ *
+ * Rein additiv - hat keinerlei Einfluss auf die eigentliche
+ * Terminal-/Tastaturfunktion.
+ */
+void uart_port_diagnose(
+    unsigned long *tx_bytes,
+    unsigned long *rx_bytes,
+    unsigned char *letztes_byte
+);
+
 #ifdef __cplusplus
 }
 #endif

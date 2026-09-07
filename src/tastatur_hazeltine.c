@@ -16,6 +16,7 @@
 
 #include "tastatur.h"
 #include "uart_port.h"
+#include "diagnose_anzeige.h"
 
 
 void tastatur_init(void)
@@ -33,8 +34,15 @@ char tastatur_lesen(void)
     {
         if (uart_port_read_byte(&taste))
         {
+            diagnose_anzeige_tick();
             return (char)taste;
         }
+
+        /* diagnose_anzeige_tick() ist intern gedrosselt (siehe dort)
+         * und daher trotz Aufruf in jeder Polling-Iteration
+         * unbedenklich - ohne aktiviertes Display (config.h
+         * D621_NOKIA5110_AKTIV) ist der Aufruf ein reines No-Op. */
+        diagnose_anzeige_tick();
 
         uart_port_delay_ms(10);
     }

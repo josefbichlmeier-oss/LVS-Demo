@@ -33,4 +33,33 @@
  * (Dirty-Tracking, siehe bildschirm.c) */
 #define D621_MAX_AENDERUNGEN 256
 
+/*
+ * Optionales Nokia 5110 (PCD8544) Diagnose-Display, ESP32-only.
+ *
+ * Rein fuer Debugging/Betriebskontrolle vor Ort gedacht - zeigt
+ * Laufzeit, freien Heap-Speicher sowie gesendete/empfangene
+ * UART-Bytes und die zuletzt vom Hazeltine empfangene Taste (Hex).
+ * Voellig unabhaengig von der Hazeltine-Anbindung, betrifft NICHT
+ * die eigentliche Anwendungslogik.
+ *
+ * Auf 0 setzen, wenn kein Display angeschlossen ist - dann wird
+ * weder die Adafruit-Bibliothek eingebunden noch irgendein Pin
+ * dafuer beansprucht (siehe src/diagnose_anzeige.cpp).
+ *
+ * Benoetigt (nur wenn aktiv) die PlatformIO-Bibliotheken
+ * "Adafruit GFX Library" und "Adafruit PCD8544 Nokia 5110 LCD
+ * library" (siehe platformio.ini lib_deps).
+ */
+#define D621_NOKIA5110_AKTIV 0
+
+/* Pins fuer das Nokia 5110 - per Software-SPI (bit-banging), daher
+ * beliebige freie GPIOs moeglich, muessen nur von UART2
+ * (RXD/TXD oben) verschieden sein. Vorbelegung passt auf die
+ * meisten gaengigen ESP32-Devkits. */
+#define D621_ESP32_NOKIA_CLK_PIN  18
+#define D621_ESP32_NOKIA_DIN_PIN  23
+#define D621_ESP32_NOKIA_DC_PIN    4
+#define D621_ESP32_NOKIA_CS_PIN    5
+#define D621_ESP32_NOKIA_RST_PIN   2
+
 #endif

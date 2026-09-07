@@ -17,11 +17,13 @@
 
 extern "C" {
 #include "anwendung.h"
+#include "diagnose_anzeige.h"
 }
 
 
 void setup()
 {
+    diagnose_anzeige_init();
     anwendung_init();
 }
 

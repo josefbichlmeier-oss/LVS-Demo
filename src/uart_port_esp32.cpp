@@ -24,6 +24,11 @@ extern "C" {
 }
 
 
+static unsigned long g_tx_bytes = 0;
+static unsigned long g_rx_bytes = 0;
+static unsigned char g_letztes_byte = 0;
+
+
 void uart_port_init(void)
 {
     Serial2.begin(
@@ -42,6 +47,8 @@ void uart_port_write(const char *data, size_t len)
         len
     );
     Serial2.flush();
+
+    g_tx_bytes += len;
 }
 
 
@@ -61,6 +68,9 @@ int uart_port_read_byte(unsigned char *out)
 
     *out = (unsigned char)wert;
 
+    g_rx_bytes++;
+    g_letztes_byte = *out;
+
     return 1;
 }
 
@@ -71,6 +81,18 @@ void uart_port_delay_ms(unsigned int ms)
      * WLAN/Hintergrund-Tasks des ESP32 laufen - wichtig, da die
      * Tastaturschleife hierueber gepollt wird. */
     delay(ms);
+}
+
+
+void uart_port_diagnose(
+    unsigned long *tx_bytes,
+    unsigned long *rx_bytes,
+    unsigned char *letztes_byte
+)
+{
+    *tx_bytes = g_tx_bytes;
+    *rx_bytes = g_rx_bytes;
+    *letztes_byte = g_letztes_byte;
 }
 
 #endif /* PLATFORM_ESP32 */

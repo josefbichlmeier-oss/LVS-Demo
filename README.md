@@ -82,6 +82,16 @@ konfigurierbar. UART0 (USB) bleibt frei fuer Flashen/Log.
   siehe Abschnitt "Bewusste Abweichungen" unten. Mit simulierten
   Zeitspruengen getestet (Jahreswechsel, Schaltjahre inkl.
   korrektem Ein-/Ausschluss des 29. Februar).
+- **Optionales Nokia-5110-Diagnose-Display** (`src/diagnose_anzeige.cpp`,
+  `config.h` -> `D621_NOKIA5110_AKTIV`, standardmaessig **aus**):
+  ESP32-only, zeigt auf einem angeschlossenen Nokia 5110/PCD8544-
+  Display Laufzeit, gesendete/empfangene UART-Bytes, die zuletzt
+  vom Hazeltine empfangene Taste (hex) und freien Heap-Speicher -
+  unabhaengig von der Hazeltine-Verbindung, rein zur
+  Betriebskontrolle vor Ort (z.B. "kommt ueberhaupt etwas vom
+  Terminal an?"). Details, Verkabelung und ein wichtiger Hinweis
+  zur Testabdeckung dieses Teils weiter unten unter "Nokia 5110
+  Diagnose-Display".
 
 ## Projektstruktur
 
@@ -94,6 +104,7 @@ src/tastatur*.c/h        Tastatureingabe (Linux Raw-Mode / Hazeltine-Rueckkanal)
 src/zeit_port*.h/.c/.cpp Kopfzeilen-Uhrzeit, Plattform-Standard (Systemzeit / Laufzeit)
 src/monotonzeit.h/.c/.cpp Monotone Sekundenuhr (millis() / CLOCK_MONOTONIC)
 src/systemzeit.c/h      Manuell gesetzte Uhrzeit, zaehlt danach weiter
+src/diagnose_anzeige.cpp Optionales Nokia-5110-Diagnose-Display (ESP32-only)
 src/bildschirm.c/h       Bildschirmpuffer mit Dirty-Tracking
 src/eingabe*.c/h         Zeilenweise Eingabe, Eingabefeld (Anmeldemaske)
 src/paginierung.c/h      Seitenweises Blaettern durch Listen (+/- Tasten)
@@ -140,6 +151,66 @@ src/main_esp32.cpp       ESP32-Einstiegspunkt (setup()/loop())
   `MAX_ARTIKEL`, `MAX_KUNDEN`, `MAX_AUFTRAEGE`, `MAX_POSITIONEN`,
   `MAX_LAGERBEWEGUNGEN` in den jeweiligen Headern - fuer den
   Speicher eines ESP32 unkritisch, im Betrieb aber zu beachten.
+
+## Nokia 5110 Diagnose-Display (optional)
+
+Rein fuer Betriebskontrolle vor Ort gedacht - unabhaengig von der
+eigentlichen Anwendung, betrifft nicht die Ruby-Portierung selbst.
+
+### Aktivieren
+
+In `config/config.h`:
+```c
+#define D621_NOKIA5110_AKTIV 1
+```
+Standardmaessig auf 0 (aus) - dann wird weder ein Pin dafuer
+beansprucht noch die Adafruit-Bibliothek eingebunden.
+
+### Verkabelung (Software-SPI, beliebige freie GPIOs)
+
+| Nokia 5110  | ESP32 (Standardbelegung, config.h) |
+|-------------|--------------------------------------|
+| RST         | GPIO2  (`D621_ESP32_NOKIA_RST_PIN`) |
+| CE (CS)     | GPIO5  (`D621_ESP32_NOKIA_CS_PIN`)  |
+| DC          | GPIO4  (`D621_ESP32_NOKIA_DC_PIN`)  |
+| DIN (MOSI)  | GPIO23 (`D621_ESP32_NOKIA_DIN_PIN`) |
+| CLK         | GPIO18 (`D621_ESP32_NOKIA_CLK_PIN`) |
+| VCC         | **3.3V** (nicht 5V!)                 |
+| BL          | 3.3V ueber Vorwiderstand (~330R), oder GND fuer aus |
+| GND         | GND                                  |
+
+Pins sind per Software-SPI angesprochen, also frei waehlbar -
+muessen nur von UART2 (GPIO16/17) verschieden sein.
+
+### Was angezeigt wird
+
+Aktualisiert sich einmal pro Sekunde (intern gedrosselt, ausgeloest
+aus der Tastatur-Pollingschleife):
+- Laufzeit seit dem letzten Start
+- Anzahl gesendeter/empfangener UART-Bytes seit dem Start (zeigt,
+  ob ueberhaupt Datenverkehr zum/vom Hazeltine stattfindet)
+- Zuletzt vom Hazeltine empfangenes Byte (hex) - hilfreich, um zu
+  pruefen, ob Tastendruecke tatsaechlich ankommen
+- Freier Heap-Speicher
+
+### Wichtiger Hinweis zur Testabdeckung
+
+Anders als der restliche ESP32-Code (der gegen einen selbst
+geschriebenen Arduino-API-Stub kompiliert und verlinkt wurde, siehe
+oben) wurde `src/diagnose_anzeige.cpp` zusaetzlich gegen selbst
+geschriebene **Fake-Header** fuer `Adafruit_GFX`/`Adafruit_PCD8544`
+kompiliert - die echten Bibliotheken konnten mangels
+Netzwerkzugriff in dieser Sandbox nicht heruntergeladen werden. Die
+verwendete API (Konstruktor, `begin()`, `setContrast()`,
+`clearDisplay()`, `setCursor()`, `setTextSize()`,
+`setTextColor()`, `println()`, `display()`) entspricht meiner
+Erinnerung an die weit verbreitete, seit Jahren stabile
+Adafruit-PCD8544-Bibliothek, aber das ist **keine Garantie**, dass
+sie exakt zur tatsaechlich von PlatformIO heruntergeladenen Version
+passt. Bitte beim ersten echten `pio run` kurz gegenpruefen - falls
+es Kompilierfehler in `diagnose_anzeige.cpp` gibt, liegt es
+vermutlich an einer leicht abweichenden Methodensignatur der
+echten Bibliothek.
 
 ## Bekannte Einschraenkungen / noch offen
 

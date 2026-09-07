@@ -33,6 +33,7 @@
 #include "maske_kundenmenue.h"
 #include "maske_kundenuebersicht.h"
 #include "maske_kundenanzeige.h"
+#include "maske_datumzeit.h"
 #include "maske_fehlermeldung.h"
 #include "maske_meldung.h"
 
@@ -282,6 +283,10 @@ void anwendung_sitzung(void)
 
             case ERG_KUNDE:
                 kunde_verarbeiten();
+                break;
+
+            case ERG_DATUMZEIT:
+                maske_datumzeit_anzeigen();
                 break;
 
             case ERG_AUFTRAG:

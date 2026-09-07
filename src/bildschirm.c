@@ -5,6 +5,7 @@
 #include "bildschirm.h"
 #include "terminal.h"
 #include "zeit_port.h"
+#include "systemzeit.h"
 
 
 typedef struct
@@ -141,7 +142,14 @@ void bildschirm_titel(const char *text)
 
     bildschirm_schreiben(x, 0, text);
 
-    zeit_text(zeit_puffer, sizeof(zeit_puffer));
+    if (systemzeit_ist_gesetzt())
+    {
+        systemzeit_text(zeit_puffer, sizeof(zeit_puffer));
+    }
+    else
+    {
+        zeit_text(zeit_puffer, sizeof(zeit_puffer));
+    }
 
     bildschirm_schreiben(D621_BREITE - 17, 0, zeit_puffer);
 

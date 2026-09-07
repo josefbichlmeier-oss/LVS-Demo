@@ -31,6 +31,7 @@ typedef enum
     ERG_ARTIKEL,
     ERG_KUNDE,
     ERG_AUFTRAG,
+    ERG_DATUMZEIT,
 
     /* Lagermenue */
     ERG_BESTAND,

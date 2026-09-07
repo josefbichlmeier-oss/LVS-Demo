@@ -77,6 +77,11 @@ konfigurierbar. UART0 (USB) bleibt frei fuer Flashen/Log.
   und nur bei einer normalen Ziffer als Beginn der Nummerneingabe
   gewertet - dadurch bleibt das Verhalten aller anderen
   Eingabefelder (z.B. Mengenfelder) unveraendert.
+- **Datum/Uhrzeit einstellen** (Hauptmenue -> 5): manuelles Setzen
+  von Datum und Uhrzeit, die danach in Echtzeit weiterlaeuft -
+  siehe Abschnitt "Bewusste Abweichungen" unten. Mit simulierten
+  Zeitspruengen getestet (Jahreswechsel, Schaltjahre inkl.
+  korrektem Ein-/Ausschluss des 29. Februar).
 
 ## Projektstruktur
 
@@ -86,7 +91,9 @@ src/platform.h          Compile-Zeit-Weiche PLATFORM_LINUX/PLATFORM_ESP32
 src/terminal*.c/h        Terminal-Treiber (ANSI bzw. Hazeltine-Bytefolgen)
 src/uart_port*.h/.cpp    UART-Anbindung ESP32 (Arduino HardwareSerial)
 src/tastatur*.c/h        Tastatureingabe (Linux Raw-Mode / Hazeltine-Rueckkanal)
-src/zeit_port*.h/.c/.cpp Kopfzeilen-Uhrzeit (Systemzeit / Laufzeit seit Boot)
+src/zeit_port*.h/.c/.cpp Kopfzeilen-Uhrzeit, Plattform-Standard (Systemzeit / Laufzeit)
+src/monotonzeit.h/.c/.cpp Monotone Sekundenuhr (millis() / CLOCK_MONOTONIC)
+src/systemzeit.c/h      Manuell gesetzte Uhrzeit, zaehlt danach weiter
 src/bildschirm.c/h       Bildschirmpuffer mit Dirty-Tracking
 src/eingabe*.c/h         Zeilenweise Eingabe, Eingabefeld (Anmeldemaske)
 src/paginierung.c/h      Seitenweises Blaettern durch Listen (+/- Tasten)
@@ -118,8 +125,17 @@ src/main_esp32.cpp       ESP32-Einstiegspunkt (setup()/loop())
   entsprechend nur "WARENEINGANG"/"WARENAUSGANG".
 - **Uhrzeit in der Kopfzeile**: Linux zeigt wie im Original die
   echte Systemzeit. Der ESP32 hat ohne zusaetzliche Hardware (RTC-
-  Modul, NTP) keine Wanduhr - die Kopfzeile zeigt dort ersatzweise
-  die Laufzeit seit dem letzten Start ("LZ hh:mm:ss").
+  Modul, NTP) keine eingebaute Wanduhr - dafuer gibt es jetzt im
+  Hauptmenue den Punkt "5 DATUM/UHRZEIT EINSTELLEN"
+  (`src/maske_datumzeit.c`, `src/systemzeit.c/h`): einmal manuell
+  gesetzt, zaehlt die Uhrzeit intern anhand einer monotonen
+  Systemuhr (`src/monotonzeit.h` - `millis()` auf dem ESP32,
+  `CLOCK_MONOTONIC` unter Linux) in Echtzeit weiter, inklusive
+  korrekter Kalenderumrechnung (Monats-/Jahreswechsel,
+  Schaltjahre). Nach einem Neustart (Stromausfall, Reset) ist die
+  Uhrzeit wieder nicht gesetzt und muss neu eingegeben werden - ein
+  DS3231-RTC-Modul oder NTP waeren die naechste sinnvolle Ausbaustufe,
+  falls das stoert.
 - **Feste Obergrenzen** statt dynamischer Ruby-Arrays: siehe
   `MAX_ARTIKEL`, `MAX_KUNDEN`, `MAX_AUFTRAEGE`, `MAX_POSITIONEN`,
   `MAX_LAGERBEWEGUNGEN` in den jeweiligen Headern - fuer den

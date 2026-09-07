@@ -15,6 +15,7 @@ Ergebnis maske_hauptmenue_anzeigen(void)
         bildschirm_schreiben(5, 4, "2  AUFTRAGSVERWALTUNG");
         bildschirm_schreiben(5, 5, "3  ARTIKELSTAMM");
         bildschirm_schreiben(5, 6, "4  KUNDENSTAMM");
+        bildschirm_schreiben(5, 7, "5  DATUM/UHRZEIT EINSTELLEN");
         bildschirm_aktion("X  ABMELDEN  ");
         bildschirm_ausgeben();
 
@@ -26,6 +27,7 @@ Ergebnis maske_hauptmenue_anzeigen(void)
             case '2': return ERG_AUFTRAG;
             case '3': return ERG_ARTIKEL;
             case '4': return ERG_KUNDE;
+            case '5': return ERG_DATUMZEIT;
             case 'X': return ERG_ENDE;
             default:  break;
         }

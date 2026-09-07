@@ -18,6 +18,8 @@ SOURCES = \
 	src/eingabe.c \
 	src/eingabefeld.c \
 	src/paginierung.c \
+	src/systemzeit.c \
+	src/monotonzeit_linux.c \
 	src/terminal_linux.c \
 	src/tastatur_linux.c \
 	src/zeit_port_linux.c \
@@ -47,6 +49,7 @@ SOURCES = \
 	src/maske_kundenmenue.c \
 	src/maske_kundenuebersicht.c \
 	src/maske_kundenanzeige.c \
+	src/maske_datumzeit.c \
 	src/maske_fehlermeldung.c \
 	src/maske_meldung.c
 

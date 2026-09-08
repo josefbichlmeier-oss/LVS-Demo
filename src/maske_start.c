@@ -19,7 +19,7 @@ Ergebnis maske_start_anzeigen(void)
     bildschirm_schreiben(26, 15, "LAGERVERWALTUNGSSYSTEM  ");
     bildschirm_schreiben(26, 17, "COMPUTEUM - VILSHOFEN ");
 
-    bildschirm_aktion("WEITER MIT BELIEBIGE TASTE");
+    bildschirm_aktion("WEITER MIT CR");
 
     bildschirm_ausgeben();
 

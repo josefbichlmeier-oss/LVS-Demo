@@ -50,7 +50,7 @@
  * "Adafruit GFX Library" und "Adafruit PCD8544 Nokia 5110 LCD
  * library" (siehe platformio.ini lib_deps).
  */
-#define D621_NOKIA5110_AKTIV 0
+#define D621_NOKIA5110_AKTIV 1
 
 /* Pins fuer das Nokia 5110 - per Software-SPI (bit-banging), daher
  * beliebige freie GPIOs moeglich, muessen nur von UART2
@@ -73,7 +73,7 @@
  *
  * Auf 0 setzen, um jegliches Debug-Logging abzuschalten.
  */
-#define D621_DEBUG_LOG_AKTIV 1
+#define D621_DEBUG_LOG_AKTIV 0
 #define D621_DEBUG_BAUDRATE  115200
 
 #endif

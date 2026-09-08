@@ -20,6 +20,7 @@ SOURCES = \
 	src/paginierung.c \
 	src/systemzeit.c \
 	src/monotonzeit_linux.c \
+	src/debug_log_linux.c \
 	src/terminal_linux.c \
 	src/tastatur_linux.c \
 	src/zeit_port_linux.c \

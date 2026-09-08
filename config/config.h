@@ -62,4 +62,18 @@
 #define D621_ESP32_NOKIA_CS_PIN    5
 #define D621_ESP32_NOKIA_RST_PIN   2
 
+/*
+ * Debug-Logging ueber die serielle USB/Programmierschnittstelle
+ * des ESP32 (UART0/Serial) - unabhaengig von UART2, das fuer die
+ * Hazeltine-Verbindung reserviert ist. Praktisch mit einem
+ * simplen "pio device monitor" oder jedem seriellen Terminal am
+ * USB-Anschluss zu verfolgen, auch ohne Nokia-5110-Display.
+ *
+ * Unter Linux (Debug-Build) landet dieselbe Ausgabe auf stderr.
+ *
+ * Auf 0 setzen, um jegliches Debug-Logging abzuschalten.
+ */
+#define D621_DEBUG_LOG_AKTIV 1
+#define D621_DEBUG_BAUDRATE  115200
+
 #endif

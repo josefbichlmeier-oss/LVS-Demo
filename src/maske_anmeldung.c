@@ -4,6 +4,7 @@
 #include "bildschirm.h"
 #include "eingabe.h"
 #include "eingabefeld.h"
+#include "debug_log.h"
 
 
 typedef struct
@@ -57,8 +58,11 @@ Ergebnis maske_anmeldung_anzeigen(void)
 
         if (benutzer_pruefen(benutzer, kennwort))
         {
+            debug_log("Anmeldung erfolgreich: Benutzer '%s'", benutzer);
             return ERG_ANGEMELDET;
         }
+
+        debug_log("Anmeldung fehlgeschlagen: Benutzer '%s' (Kennwort nicht geloggt)", benutzer);
 
         bildschirm_schreiben(56, 26, "FALSCHE ANMELDUNG");
         bildschirm_schreiben(2, 26, "NOCH EIN VERSUCH MIT CR");

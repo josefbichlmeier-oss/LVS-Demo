@@ -21,6 +21,7 @@
 extern "C" {
 #include "uart_port.h"
 #include "../config/config.h"
+#include "debug_log.h"
 }
 
 
@@ -36,6 +37,11 @@ void uart_port_init(void)
         SERIAL_8N1,
         D621_ESP32_RXD_PIN,
         D621_ESP32_TXD_PIN
+    );
+
+    debug_log(
+        "UART2 initialisiert: %d Baud 8N1, RX=GPIO%d, TX=GPIO%d",
+        D621_BAUDRATE, D621_ESP32_RXD_PIN, D621_ESP32_TXD_PIN
     );
 }
 

@@ -18,13 +18,19 @@
 extern "C" {
 #include "anwendung.h"
 #include "diagnose_anzeige.h"
+#include "debug_log.h"
 }
 
 
 void setup()
 {
+    debug_log_init();
+    debug_log("D621-LVS startet (ESP32/Hazeltine-Zielbetrieb)");
+
     diagnose_anzeige_init();
     anwendung_init();
+
+    debug_log("Initialisierung abgeschlossen, Sitzung startet");
 }
 
 
@@ -35,6 +41,8 @@ void loop()
      * Arduino loop() sie sofort erneut auf - das Geraet springt
      * dann wieder zum Startbildschirm, statt "haengenzubleiben". */
     anwendung_sitzung();
+
+    debug_log("Sitzung beendet - zurueck zum Startbildschirm");
 }
 
 #endif

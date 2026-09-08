@@ -105,6 +105,7 @@ src/zeit_port*.h/.c/.cpp Kopfzeilen-Uhrzeit, Plattform-Standard (Systemzeit / La
 src/monotonzeit.h/.c/.cpp Monotone Sekundenuhr (millis() / CLOCK_MONOTONIC)
 src/systemzeit.c/h      Manuell gesetzte Uhrzeit, zaehlt danach weiter
 src/diagnose_anzeige.cpp Optionales Nokia-5110-Diagnose-Display (ESP32-only)
+src/debug_log.h/.c/.cpp  Logging ueber USB/Programmierschnittstelle (UART0) bzw. stderr
 src/bildschirm.c/h       Bildschirmpuffer mit Dirty-Tracking
 src/eingabe*.c/h         Zeilenweise Eingabe, Eingabefeld (Anmeldemaske)
 src/paginierung.c/h      Seitenweises Blaettern durch Listen (+/- Tasten)
@@ -151,6 +152,35 @@ src/main_esp32.cpp       ESP32-Einstiegspunkt (setup()/loop())
   `MAX_ARTIKEL`, `MAX_KUNDEN`, `MAX_AUFTRAEGE`, `MAX_POSITIONEN`,
   `MAX_LAGERBEWEGUNGEN` in den jeweiligen Headern - fuer den
   Speicher eines ESP32 unkritisch, im Betrieb aber zu beachten.
+
+## Debug-Logging ueber die USB/Programmierschnittstelle
+
+Unabhaengig vom Nokia-Display und ohne zusaetzliche Hardware: Ueber
+UART0 (Serial, derselbe USB-Anschluss, der auch zum Flashen dient)
+gibt der ESP32 Klartext-Logzeilen zu allen wichtigen Vorgaengen aus
+- einfach per `pio device monitor` (oder jedem anderen seriellen
+Terminal, 115200 8N1) mitzulesen. Voellig getrennt von UART2
+(Hazeltine) und vom Nokia-Display.
+
+Protokolliert werden u.a.: Initialisierung, Anmeldeversuche (Name
+ja, Kennwort NIE), Wareneingang/-ausgang-Buchungen inkl.
+Fehlerfaellen (Artikel nicht gefunden, Bestand nicht ausreichend),
+neu angelegte Auftraege und jede Auslieferung (inkl. Ablehnung bei
+bereits ausgelieferten Auftraegen).
+
+In `config/config.h` per `D621_DEBUG_LOG_AKTIV` abschaltbar (Standard:
+an) und `D621_DEBUG_BAUDRATE` (Standard 115200) einstellbar. Auf
+dem Linux-Debug-Build landet dieselbe Ausgabe auf stderr
+(`./d621-lvs 2> log.txt`), getrennt von der Bildschirmausgabe auf
+stdout.
+
+`debug_log()` ist mit `__attribute__((format(printf,...)))`
+markiert, sodass GCC/Clang auf dem Linux-Build Formatstring-Fehler
+in den Aufrufstellen (`src/anwendung.c`, `src/maske_anmeldung.c`,
+...) bereits beim Kompilieren erkennt - genutzt, um alle
+Log-Aufrufe zu verifizieren, da sich die tatsaechliche
+Serial-Ausgabe auf echter ESP32-Hardware hier nicht beobachten
+liess.
 
 ## Nokia 5110 Diagnose-Display (optional)
 

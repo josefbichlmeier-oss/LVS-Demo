@@ -36,6 +36,7 @@
 #include "maske_datumzeit.h"
 #include "maske_fehlermeldung.h"
 #include "maske_meldung.h"
+#include "debug_log.h"
 
 
 static void lager_verarbeiten(void)
@@ -66,10 +67,12 @@ static void lager_verarbeiten(void)
 
             if (buchung == ERG_OK)
             {
+                debug_log("Wareneingang gebucht: Artikel '%s', Menge %d", nummer, menge);
                 maske_meldung_anzeigen("BUCHUNG DURCHGEFUEHRT");
             }
             else if (buchung == ERG_NICHT_GEFUNDEN)
             {
+                debug_log("Wareneingang fehlgeschlagen: Artikel '%s' nicht gefunden", nummer);
                 maske_fehlermeldung_anzeigen("ARTIKEL NICHT GEFUNDEN");
             }
 
@@ -98,14 +101,17 @@ static void lager_verarbeiten(void)
 
             if (buchung == ERG_OK)
             {
+                debug_log("Warenausgang gebucht: Artikel '%s', Menge %d", nummer, menge);
                 maske_meldung_anzeigen("BUCHUNG DURCHGEFUEHRT");
             }
             else if (buchung == ERG_NICHT_GEFUNDEN)
             {
+                debug_log("Warenausgang fehlgeschlagen: Artikel '%s' nicht gefunden", nummer);
                 maske_fehlermeldung_anzeigen("ARTIKEL NICHT GEFUNDEN");
             }
             else if (buchung == ERG_BESTAND_UNZUREICHEND)
             {
+                debug_log("Warenausgang fehlgeschlagen: Bestand nicht ausreichend fuer '%s' (Menge %d)", nummer, menge);
                 maske_fehlermeldung_anzeigen("BESTAND NICHT AUSREICHEND");
             }
 
@@ -185,6 +191,13 @@ static void auftrag_bearbeiten(void)
             if (ergebnis == ERG_ZURUECK)
                 continue;
 
+            debug_log(
+                "Neuer Auftrag %d angelegt: Kunde '%s', %d Position(en)",
+                neuer_auftrag->nummer,
+                neuer_auftrag->kundennummer,
+                neuer_auftrag->positionen_anzahl
+            );
+
             maske_meldung_anzeigen("AUFTRAG ERHALTEN");
         }
         else if (auftrag_auswahl == ERG_ANZEIGEN)
@@ -216,22 +229,27 @@ static void auftrag_bearbeiten(void)
                 switch (abbuchen_ergebnis)
                 {
                     case 0:
+                        debug_log("Auftrag %d ausgeliefert (Kunde '%s')", auftrag->nummer, auftrag->kundennummer);
                         maske_meldung_anzeigen("AUFTRAG AUSGELIEFERT");
                         break;
 
                     case -5:
+                        debug_log("Auslieferung Auftrag %d abgelehnt: bereits ausgeliefert", auftrag->nummer);
                         maske_fehlermeldung_anzeigen("AUFTRAG BEREITS AUSGELIEFERT");
                         break;
 
                     case -2:
+                        debug_log("Auslieferung Auftrag %d abgelehnt: Bestand nicht ausreichend", auftrag->nummer);
                         maske_fehlermeldung_anzeigen("BESTAND NICHT AUSREICHEND");
                         break;
 
                     case -1:
+                        debug_log("Auslieferung Auftrag %d abgelehnt: Artikel nicht gefunden", auftrag->nummer);
                         maske_fehlermeldung_anzeigen("ARTIKEL NICHT GEFUNDEN");
                         break;
 
                     default:
+                        debug_log("Auslieferung Auftrag %d fehlgeschlagen: Code %d", auftrag->nummer, abbuchen_ergebnis);
                         maske_fehlermeldung_anzeigen("BUCHUNG FEHLGESCHLAGEN");
                         break;
                 }
@@ -252,6 +270,8 @@ void anwendung_init(void)
     eingabe_init();
 
     demo_daten_initialisieren();
+
+    debug_log("Terminal/Bildschirm/Tastatur/Demodaten initialisiert");
 }
 
 
@@ -259,11 +279,13 @@ void anwendung_sitzung(void)
 {
     if (maske_start_anzeigen() != ERG_WEITER)
     {
+        debug_log("Sitzung abgebrochen: Startbildschirm nicht bestaetigt");
         return;
     }
 
     if (maske_anmeldung_anzeigen() != ERG_ANGEMELDET)
     {
+        debug_log("Sitzung abgebrochen: keine erfolgreiche Anmeldung");
         return;
     }
 

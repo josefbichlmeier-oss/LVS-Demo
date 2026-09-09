@@ -1,4 +1,4 @@
-# D621-LVS - C-Portierung (ESP32/Hazeltine)
+# D621-LVS - C-Portierung (ESP32/Hazeltine/VT220)
 
 C-Portierung der Ruby-Referenzimplementierung einer Lager- und
 Auftragsverwaltung fuer ein Museum. Zwei Build-Ziele aus **einem**
@@ -8,14 +8,27 @@ gemeinsamen Quellbaum:
   der virtuellen Konsole, Tastatur im Raw-Modus. Zum Testen der
   Anwendungslogik ohne Hardware.
 - **ESP32-Zielbuild** (`platformio.ini`, Arduino-Core): Ausgabe an
-  ein Hazeltine 2000A/B ueber Hardware-UART2 + externen
-  RS232-Pegelwandler (z.B. MAX3232), 9600 8N1. Tastatureingaben
-  kommen ueber dieselbe Leitung vom Hazeltine zurueck.
+  ein angeschlossenes serielles Terminal ueber Hardware-UART2 +
+  externen RS232-Pegelwandler (z.B. MAX3232), 9600 8N1.
+  Tastatureingaben kommen ueber dieselbe Leitung vom Terminal
+  zurueck. Zwei Terminaltypen werden unterstuetzt - welcher davon
+  tatsaechlich angesprochen wird, waehlt
+  `config/config.h` -> `D621_ESP32_TERMINAL`:
+  - **Hazeltine 2000A/B** (`D621_TERMINAL_HAZELTINE`, Standard):
+    proprietaeres Bytefolgen-Protokoll, siehe `src/terminal_hazeltine.c`.
+  - **DEC VT220** (`D621_TERMINAL_VT220`): Standard-ANSI/VT100-
+    Escapecodes, siehe `src/terminal_vt220.c`.
+
+  Beide Terminaltreiber sind immer Teil des Quellbaums, aber pro
+  Build ist nur einer davon aktiv - kein gleichzeitiger Betrieb
+  beider Terminals an einem ESP32 (dafuer waere eine zweite
+  UART-Instanz noetig, was hier nicht umgesetzt ist).
 
 Die Auswahl der passenden Terminal-/Tastatur-/UART-Implementierung
-erfolgt automatisch zur Compile-Zeit (`src/platform.h`), nicht zur
-Laufzeit - jede Zielplattform ist fest an ein Ausgabegeraet
-gebunden.
+erfolgt automatisch zur Compile-Zeit (`src/platform.h` fuer
+Linux/ESP32, `config/config.h` -> `D621_ESP32_TERMINAL` fuer
+Hazeltine/VT220 auf dem ESP32), nicht zur Laufzeit - jede
+Zielkonfiguration ist fest an ein Ausgabegeraet gebunden.
 
 ## Bauen (Linux-Debug)
 
@@ -29,7 +42,9 @@ make
 Benoetigt [PlatformIO](https://platformio.org/) (nicht Teil dieses
 Pakets, laedt die ESP32-Toolchain beim ersten Aufruf aus dem
 Internet nach - in der Sandbox, in der dieser Code entstanden ist,
-war das nicht moeglich, siehe "Bekannte Einschraenkungen" unten):
+war das nicht moeglich, siehe "Bekannte Einschraenkungen" unten).
+Vor dem Bauen in `config/config.h` den gewuenschten Terminaltyp
+einstellen (`D621_ESP32_TERMINAL`, Standard: Hazeltine):
 
 ```
 pio run -e esp32dev
@@ -42,15 +57,23 @@ ESP32-Modul anpassen (Standard: `esp32dev`).
 
 ### Verkabelung
 
-| ESP32        | MAX3232 | Hazeltine 2000A/B (RS232, DB25/DB9) |
-|--------------|---------|--------------------------------------|
-| GPIO17 (TX2) | T1IN    | RxD                                    |
-| GPIO16 (RX2) | R1OUT   | TxD                                    |
-| GND          | GND     | GND                                    |
+Bei beiden Terminaltypen identisch (nur ein RS232-Geraet
+gleichzeitig angeschlossen, je nach `D621_ESP32_TERMINAL`):
+
+| ESP32        | MAX3232 | Terminal (RS232, DB25/DB9) |
+|--------------|---------|------------------------------|
+| GPIO17 (TX2) | T1IN    | RxD                           |
+| GPIO16 (RX2) | R1OUT   | TxD                           |
+| GND          | GND     | GND                           |
 
 Pins/UART-Nummer in `config/config.h`
 (`D621_ESP32_RXD_PIN`/`D621_ESP32_TXD_PIN`/`D621_ESP32_UART_NUM`)
-konfigurierbar. UART0 (USB) bleibt frei fuer Flashen/Log.
+konfigurierbar. UART0 (USB) bleibt frei fuer Flashen/Debug-Log
+(siehe Abschnitt "Debug-Logging" unten).
+
+Ein VT220 kann in der Praxis auch mit hoeheren Baudraten (19200,
+38400) betrieben werden - `D621_BAUDRATE` bei Bedarf anpassen, muss
+zur tatsaechlichen Einstellung am VT220 (Setup-Menue) passen.
 
 ## Erweiterungen gegenueber der ersten Portierung
 
@@ -98,9 +121,9 @@ konfigurierbar. UART0 (USB) bleibt frei fuer Flashen/Log.
 ```
 config/config.h        Zentrale Konfiguration (Geometrie, Baudrate, Pins)
 src/platform.h          Compile-Zeit-Weiche PLATFORM_LINUX/PLATFORM_ESP32
-src/terminal*.c/h        Terminal-Treiber (ANSI bzw. Hazeltine-Bytefolgen)
+src/terminal*.c/h        Terminal-Treiber (ANSI-Konsole, Hazeltine-Bytefolgen, VT220-Escapecodes)
 src/uart_port*.h/.cpp    UART-Anbindung ESP32 (Arduino HardwareSerial)
-src/tastatur*.c/h        Tastatureingabe (Linux Raw-Mode / Hazeltine-Rueckkanal)
+src/tastatur*.c/h        Tastatureingabe (Linux Raw-Mode / serielles Polling fuer Hazeltine+VT220)
 src/zeit_port*.h/.c/.cpp Kopfzeilen-Uhrzeit, Plattform-Standard (Systemzeit / Laufzeit)
 src/monotonzeit.h/.c/.cpp Monotone Sekundenuhr (millis() / CLOCK_MONOTONIC)
 src/systemzeit.c/h      Manuell gesetzte Uhrzeit, zaehlt danach weiter
@@ -119,6 +142,14 @@ src/main_esp32.cpp       ESP32-Einstiegspunkt (setup()/loop())
 
 ## Bewusste Abweichungen vom Ruby-Original
 
+- **VT220 als zweiter Terminaltyp**: Das Ruby-Original kennt nur
+  Hazeltine (und die Linux-Konsole zum Testen). Diese Portierung
+  ergaenzt einen zweiten, gleichwertigen ESP32-Zielbetrieb fuer ein
+  DEC VT220 ueber Standard-ANSI/VT100-Escapecodes
+  (`src/terminal_vt220.c`) - Details siehe Abschnitt "Bauen (ESP32)"
+  oben. Fuer die Hervorhebung ("hell"/"dunkel") wird dabei bewusst
+  Invers-Video (SGR 7) statt Farbcodes verwendet, da echte
+  VT220-Hardware monochrom ist und keine ANSI-Farben kennt.
 - **Doppelte Bestandsbuchung korrigiert**: Im Original bucht sowohl
   `Neuerauftrag` (bei der Erfassung) als auch `Auslieferung` (bei
   der Lieferung) den Lagerbestand ab. Hier wird der Bestand nur
@@ -252,12 +283,22 @@ echten Bibliothek.
   echten PlatformIO/ESP-IDF-Toolchain gebaut werden (kein
   Netzwerkzugriff, PlatformIO laedt Toolchain/Framework beim
   ersten Lauf herunter). Ersatzweise wurden alle ESP32-spezifischen
-  Dateien (`terminal_hazeltine.c`, `tastatur_hazeltine.c`,
-  `uart_port_esp32.cpp`, `zeit_port_esp32.cpp`, `main_esp32.cpp`)
-  gegen einen minimalen Arduino-API-Stub kompiliert und verlinkt,
-  um zumindest Syntax-/Typfehler auszuschliessen. Der erste
-  reale `pio run -e esp32dev` steht noch aus - bitte kurz
-  rueckmelden, ob und mit welchem Fehler er ggf. scheitert.
+  Dateien (`terminal_hazeltine.c`, `terminal_vt220.c`,
+  `tastatur_seriell.c`, `uart_port_esp32.cpp`, `zeit_port_esp32.cpp`,
+  `main_esp32.cpp`) gegen einen minimalen Arduino-API-Stub
+  kompiliert und verlinkt, um zumindest Syntax-/Typfehler
+  auszuschliessen - **fuer beide Terminal-Konfigurationen einzeln**
+  (`D621_ESP32_TERMINAL` auf Hazeltine bzw. VT220 gestellt), inkl.
+  Gegenpruefung per `nm`, dass jeweils nur der aktive Treiber
+  tatsaechlich Code erzeugt und der inaktive vollstaendig leer
+  bleibt. Der erste reale `pio run -e esp32dev` steht in jedem Fall
+  noch aus - bitte kurz rueckmelden, ob und mit welchem Fehler er
+  ggf. scheitert. Insbesondere die VT220-Escapecodes selbst
+  (`terminal_vt220.c`) sind Standard-ANSI/VT100 und sollten auf
+  echter Hardware funktionieren, wurden aber mangels VT220-Emulator
+  in dieser Sandbox nicht gegen ein echtes Geraet/eine Emulation
+  verifiziert - anders als die Hazeltine-Bytefolgen, die 1:1 aus
+  der Ruby-Vorlage uebernommen sind.
 - Kein Dateisystem/Persistenz - wie im Ruby-Original leben alle
   Daten nur im RAM und sind nach einem Neustart wieder auf dem
   Demo-Stand (siehe `src/demo.c`).

@@ -24,6 +24,10 @@
 
 #if defined(PLATFORM_ESP32)
 
+#include "../config/config.h"
+
+#if D621_ESP32_TERMINAL == D621_TERMINAL_HAZELTINE
+
 #include <string.h>
 
 #include "terminal.h"
@@ -115,5 +119,7 @@ void terminal_zeichen_loeschen(void)
 
     uart_port_write(sequenz, sizeof(sequenz) - 1);
 }
+
+#endif /* D621_ESP32_TERMINAL == D621_TERMINAL_HAZELTINE */
 
 #endif /* PLATFORM_ESP32 */

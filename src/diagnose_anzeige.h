@@ -7,7 +7,7 @@
  * Hazeltine-Leitung an?), voellig unabhaengig von der eigentlichen
  * Anwendungslogik. Ist das Display deaktiviert oder nicht
  * angeschlossen, sind beide Funktionen wirkungslose No-Ops - die
- * Aufrufstellen (main_esp32.cpp, tastatur_hazeltine.c) muessen
+ * Aufrufstellen (main_esp32.cpp, tastatur_seriell.c) muessen
  * sich darum nicht kuemmern.
  */
 

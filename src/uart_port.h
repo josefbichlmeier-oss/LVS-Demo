@@ -3,14 +3,15 @@
  *
  * Duenne UART-Portierungsschicht fuer die ESP32/Arduino-Seite.
  *
- * Wird von terminal_hazeltine.c (Ausgabe zum Hazeltine) und von
- * tastatur_hazeltine.c (Tastatureingaben vom Hazeltine, kommen
- * ueber dieselbe Leitung zurueck - wie in der Ruby-Vorlage, wo
- * SerielleSchnittstelle sowohl senden() als auch empfangen()
- * anbietet) gemeinsam genutzt.
+ * Wird von terminal_hazeltine.c bzw. terminal_vt220.c (Ausgabe
+ * zum angeschlossenen Terminal, siehe config.h
+ * D621_ESP32_TERMINAL) und von tastatur_seriell.c (Tastatur-
+ * eingaben, kommen ueber dieselbe Leitung zurueck - wie in der
+ * Ruby-Vorlage, wo SerielleSchnittstelle sowohl senden() als auch
+ * empfangen() anbietet) gemeinsam genutzt.
  *
  * Implementiert in uart_port_esp32.cpp (Arduino HardwareSerial,
- * UART2 -> MAX3232 -> Hazeltine 2000A/B).
+ * UART2 -> MAX3232 -> Hazeltine oder VT220).
  */
 
 #ifndef D621_UART_PORT_H

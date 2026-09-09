@@ -3,15 +3,18 @@
  *
  * Tastatur-Schnittstelle.
  *
- * PLATFORM_LINUX -> tastatur_linux.c      Raw-Mode-Lesen von stdin
- *                                         (entspricht Ruby
- *                                         LinuxTastatur/STDIN.getch)
- * PLATFORM_ESP32 -> tastatur_hazeltine.c  Byte-Empfang vom
- *                                         Hazeltine ueber dieselbe
- *                                         UART-Leitung, auf der
- *                                         auch ausgegeben wird
- *                                         (entspricht Ruby
- *                                         HazeltineTastatur)
+ * PLATFORM_LINUX -> tastatur_linux.c    Raw-Mode-Lesen von stdin
+ *                                       (entspricht Ruby
+ *                                       LinuxTastatur/STDIN.getch)
+ * PLATFORM_ESP32 -> tastatur_seriell.c  Byte-Empfang vom
+ *                                       angeschlossenen Terminal
+ *                                       (Hazeltine oder VT220,
+ *                                       siehe config.h
+ *                                       D621_ESP32_TERMINAL) ueber
+ *                                       dieselbe UART-Leitung, auf
+ *                                       der auch ausgegeben wird
+ *                                       (entspricht Ruby
+ *                                       HazeltineTastatur)
  */
 
 #ifndef D621_TASTATUR_H

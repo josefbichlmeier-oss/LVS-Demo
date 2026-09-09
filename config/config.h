@@ -59,7 +59,7 @@
 #define D621_TERMINAL_HAZELTINE 1
 #define D621_TERMINAL_VT220     2
 
-#define D621_ESP32_TERMINAL D621_TERMINAL_VT220
+#define D621_ESP32_TERMINAL D621_TERMINAL_HAZELTINE
 
 /* Die Tastatur des angeschlossenen Terminals sendet ihre
  * Tastendruecke unabhaengig vom Terminaltyp ueber dieselbe

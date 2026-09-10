@@ -13,11 +13,17 @@ void artikelbestand_initialisieren(void)
 {
     artikel_anzahl_wert = 0;
 
-    artikel_anlegen("1001", "SCHRAUBE M6X20",       250, "A-01-01");
+    artikel_anlegen("1001", "SCHRAUBE M6X20",        250, "A-01-01");
     artikel_anlegen("1002", "MUTTER M6",             180, "A-01-04");
     artikel_anlegen("1003", "UNTERLEGSCHEIBE M6",    420, "A-01-05");
     artikel_anlegen("1004", "STAHLBLECH 1MM",         10, "C-02-04");
     artikel_anlegen("1005", "STAHLWINKEL 30X30",      42, "C-01-03");
+
+    artikel_anlegen("1006", "HAMMER 250GR",           20, "W-01-14");
+    artikel_anlegen("1007", "KNIPEX ROHRZANGE",       12, "W-01-08");
+    artikel_anlegen("1008", "BUEGELSAEGE 400MM",      23, "W-01-07");
+    artikel_anlegen("1009", "BOHRERSATZ 1-10MM",      33, "W-02-01");
+    artikel_anlegen("1010", "WELLER LOETSTATION",      8, "W-02-12");
 }
 
 

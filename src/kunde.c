@@ -37,6 +37,18 @@ void kundenbestand_initialisieren(void)
         "INDUSTRIESTRASSE 7", "94032", "PASSAU",
         "0851 / 12345", "FRAU WEBER"
     );
+
+    kunde_anlegen(
+        "1003", "ELCODATA GMBH",
+        "BAHNHOFSTRASSE 8", "94469", "DEGGENDRF",
+        "0991 / 32168", "FRAU VOGL"
+    );
+
+    kunde_anlegen(
+        "1004", "HUBER OHG",
+        "PASSAUERSTRASSE 23", "94474", "VILSHOFEN",
+        "08541 / 984711", "HERR KUMPFMUELLER"
+    );
 }
 
 

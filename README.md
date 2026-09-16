@@ -1,5 +1,7 @@
 # D621-LVS - C-Portierung (ESP32/Hazeltine/VT220)
 
+![Dietz 600 / Hazeltine 2000](IMG_4498.JPG)
+
 C-Portierung der Ruby-Referenzimplementierung einer Lager- und
 Auftragsverwaltung fuer ein Museum. Zwei Build-Ziele aus **einem**
 gemeinsamen Quellbaum:
